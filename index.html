@@ -37,41 +37,38 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 8px;
-            font-size: 20px;
+            margin-bottom: 20px;
+            font-size: 32px;
             font-weight: 700;
             letter-spacing: 2px;
             text-shadow: 0 0 30px rgba(0,245,212,0.3);
         }
         #game-container {
             display: flex;
-            gap: 12px;
+            gap: 16px;
             align-items: flex-start;
             justify-content: center;
         }
         
         @media (max-width: 400px) {
-            h1 { font-size: 18px; margin-bottom: 6px; }
             #game-container {
-                gap: 8px;
-            }
-            canvas {
-                border-width: 2px;
-                border-radius: 8px;
+                flex-direction: column;
+                align-items: center;
+                gap: 12px;
             }
             #info {
-                gap: 8px;
-                min-width: 100px;
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+                min-width: auto;
+                width: 100%;
+                max-width: 180px;
             }
             .score-box {
-                padding: 6px 10px;
-            }
-            .score-box label { font-size: 9px; }
-            .score-box span { font-size: 18px; }
-            #start-btn, #pause-btn {
                 padding: 10px 16px;
-                font-size: 14px;
-                border-radius: 8px;
+            }
+            .score-box span {
+                font-size: 22px;
             }
         }
         canvas {
@@ -86,39 +83,39 @@
             color: #fff;
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            min-width: 120px;
+            gap: 16px;
+            min-width: 140px;
         }
         .score-box {
             background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
             backdrop-filter: blur(10px);
-            padding: 10px 14px;
-            border-radius: 10px;
+            padding: 16px 20px;
+            border-radius: 12px;
             border: 1px solid rgba(255,255,255,0.1);
         }
         .score-box label { 
             color: rgba(255,255,255,0.6); 
-            font-size: 10px;
+            font-size: 12px;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
         .score-box span { 
             color: #00f5d4; 
-            font-size: 20px; 
+            font-size: 28px; 
             font-weight: 600;
             display: block; 
-            margin-top: 2px; 
+            margin-top: 4px; 
         }
         #start-btn {
             background: linear-gradient(135deg, #00f5d4 0%, #00bbf9 100%);
             color: #0f0c29;
             border: none;
-            padding: 12px 20px;
-            font-size: 14px;
+            padding: 14px 28px;
+            font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            border-radius: 10px;
-            margin-top: 6px;
+            border-radius: 12px;
+            margin-top: 8px;
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(0,245,212,0.3);
         }
@@ -129,32 +126,26 @@
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
             color: #fff;
             border: none;
-            padding: 12px 20px;
-            font-size: 14px;
+            padding: 14px 28px;
+            font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            border-radius: 10px;
+            border-radius: 12px;
             transition: all 0.2s ease;
             box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
         }
         #pause-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(245, 87, 108, 0.4); }
         #pause-btn:active { transform: scale(0.96); }
         
-        #controls { 
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            margin-top: 8px;
-        }
-        .btn-row { display: flex; gap: 6px; justify-content: center; }
+        #controls { margin-top: 24px; }
+        .btn-row { display: flex; gap: 12px; justify-content: center; margin-bottom: 12px; }
         .ctrl-btn {
-            width: 44px; height: 44px;
+            width: 56px; height: 56px;
             background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%);
             color: #fff;
             border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 10px;
-            font-size: 16px;
+            border-radius: 16px;
+            font-size: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -202,7 +193,7 @@
 <body>
     <h1>TETRIS</h1>
     <div id="game-container">
-        <canvas id="tetris" width="162" height="288"></canvas>
+        <canvas id="tetris" width="180" height="400"></canvas>
         <div id="info">
             <div class="score-box">
                 <label>分数 Score</label>
@@ -214,16 +205,16 @@
             </div>
             <button id="start-btn" onclick="startGame()">开始游戏</button>
             <button id="pause-btn" onclick="togglePause()" style="display:none;">暂停</button>
-            <div id="controls">
-                <div class="btn-row">
-                    <div class="ctrl-btn" ontouchstart="rotate()">↻</div>
-                </div>
-                <div class="btn-row">
-                    <div class="ctrl-btn" ontouchstart="move(-1)">←</div>
-                    <div class="ctrl-btn" ontouchstart="drop()">↓</div>
-                    <div class="ctrl-btn" ontouchstart="move(1)">→</div>
-                </div>
-            </div>
+        </div>
+    </div>
+    <div id="controls">
+        <div class="btn-row">
+            <div class="ctrl-btn" ontouchstart="rotate()">↻</div>
+        </div>
+        <div class="btn-row">
+            <div class="ctrl-btn" ontouchstart="move(-1)">←</div>
+            <div class="ctrl-btn" ontouchstart="drop()">↓</div>
+            <div class="ctrl-btn" ontouchstart="move(1)">→</div>
         </div>
     </div>
     <div id="game-over">
@@ -235,9 +226,9 @@
     <script>
         const canvas = document.getElementById('tetris');
         const ctx = canvas.getContext('2d');
-        const SCALE = 18;
-        const COLS = 9;  // 适配手机竖屏
-        const ROWS = 16; // 减少行数，更适合手机屏幕
+        const SCALE = 20;
+        const COLS = 9;  // 适配手机竖屏 (180/20)
+        const ROWS = 20; // 适配手机竖屏 (400/20)
         
         // 现代渐变色彩
         const COLORS = [
