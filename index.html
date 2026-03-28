@@ -21,6 +21,12 @@
         /* 允许输入框等可选择 */
         input, textarea { -webkit-user-select: auto; }
         
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            touch-action: manipulation;
+        }
+        
         body {
             background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
             min-height: 100vh;
@@ -29,32 +35,146 @@
             align-items: center;
             justify-content: center;
             font-family: 'Outfit', sans-serif;
-            touch-action: manipulation;
-            overflow: hidden;
+            padding: 8px;
         }
         h1 {
             background: linear-gradient(90deg, #00f5d4, #00bbf9, #9b5de5);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 20px;
-            font-size: 32px;
+            margin-bottom: 4px;
+            font-size: 24px;
             font-weight: 700;
             letter-spacing: 2px;
             text-shadow: 0 0 30px rgba(0,245,212,0.3);
         }
+        #version {
+            color: #fff;
+            font-size: 12px;
+            margin-bottom: 8px;
+            opacity: 0.6;
+        }
         #game-container {
             display: flex;
-            gap: 16px;
+            gap: 12px;
             align-items: flex-start;
             justify-content: center;
         }
         
-        @media (max-width: 400px) {
+        /* 默认PC布局缩小 */
+        canvas {
+            border: 2px solid rgba(0,245,212,0.5);
+            border-radius: 8px;
+            background: rgba(15, 12, 41, 0.8);
+            box-shadow: 
+                0 0 20px rgba(0,245,212,0.2),
+                inset 0 0 60px rgba(0,0,0,0.5);
+        }
+        #info {
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-width: 100px;
+        }
+        .score-box {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            backdrop-filter: blur(10px);
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .score-box label { 
+            color: rgba(255,255,255,0.6); 
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .score-box span { 
+            color: #00f5d4; 
+            font-size: 20px; 
+            font-weight: 600;
+            display: block; 
+            margin-top: 2px; 
+        }
+        
+        #start-btn, #pause-btn {
+            background: linear-gradient(135deg, #00f5d4 0%, #00bbf9 100%);
+            color: #0f0c29;
+            border: none;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 8px;
+            margin-top: 4px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,245,212,0.3);
+        }
+        #start-btn:hover, #pause-btn:hover { transform: translateY(-2px); }
+        #start-btn:active, #pause-btn:active { transform: scale(0.96); }
+        
+        #pause-btn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+        }
+        
+        #controls { margin-top: 10px; }
+        .btn-row { display: flex; gap: 8px; justify-content: center; margin-bottom: 8px; }
+        .ctrl-btn {
+            width: 48px; height: 48px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+            -webkit-user-select: none;
+            transition: all 0.2s ease;
+        }
+        .ctrl-btn:active { 
+            background: linear-gradient(135deg, #00f5d4 0%, #00bbf9 100%);
+            color: #0f0c29;
+            transform: scale(0.92);
+        }
+        
+        #game-over {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 12, 41, 0.95);
+            backdrop-filter: blur(10px);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            z-index: 100;
+        }
+        #game-over h2 { 
+            background: linear-gradient(90deg, #f72585, #b5179e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 36px; 
+            font-weight: 700;
+        }
+        #game-over p { font-size: 18px; margin: 16px 0; color: rgba(255,255,255,0.8); }
+        #game-over span { color: #00f5d4; font-weight: 600; }
+        
+        /* 手机端适配 - 竖屏小屏幕 */
+        @media (max-width: 380px) {
+            h1 { font-size: 20px; margin-bottom: 4px; }
             #game-container {
                 flex-direction: column;
                 align-items: center;
-                gap: 12px;
+                gap: 6px;
+            }
+            canvas {
+                border-width: 2px;
+                border-radius: 6px;
             }
             #info {
                 flex-direction: row;
@@ -62,14 +182,68 @@
                 justify-content: center;
                 min-width: auto;
                 width: 100%;
-                max-width: 180px;
+                max-width: 160px;
+                gap: 6px;
             }
             .score-box {
-                padding: 10px 16px;
+                padding: 6px 10px;
+                flex: 1;
+                min-width: 60px;
+                text-align: center;
             }
-            .score-box span {
-                font-size: 22px;
+            .score-box label { font-size: 9px; }
+            .score-box span { font-size: 16px; }
+            #start-btn, #pause-btn {
+                padding: 8px 16px;
+                font-size: 12px;
             }
+            #controls { margin-top: 6px; }
+            .btn-row { margin-bottom: 6px; gap: 6px; }
+            .ctrl-btn {
+                width: 44px; height: 44px;
+                font-size: 16px;
+                border-radius: 10px;
+            }
+            #game-over h2 { font-size: 28px; }
+            #game-over p { font-size: 16px; }
+        }
+        
+        /* 更小的屏幕 */
+        @media (max-width: 320px) {
+            h1 { font-size: 18px; }
+            canvas {
+                width: 150px;
+                height: 300px;
+            }
+            #info { max-width: 150px; }
+            .ctrl-btn {
+                width: 40px; height: 40px;
+                font-size: 14px;
+            }
+        }
+        
+        /* 横屏时横向排列 */
+        @media (orientation: landscape) and (max-height: 500px) {
+            h1 { display: none; }
+            #game-container {
+                flex-direction: row;
+                gap: 20px;
+            }
+            #controls { 
+                position: absolute; 
+                bottom: 10px; 
+                left: 50%;
+                transform: translateX(-50%);
+                margin-top: 0;
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        .score-box span {
+            animation: pulse 2s ease-in-out infinite;
         }
         canvas {
             border: 3px solid rgba(0,245,212,0.5);
@@ -192,8 +366,10 @@
 </head>
 <body>
     <h1>TETRIS</h1>
+    <div id="version">v1.0</div>
     <div id="game-container">
-        <canvas id="tetris" width="180" height="400"></canvas>
+        <!-- 默认小尺寸，手机端自适应缩放 -->
+        <canvas id="tetris" width="150" height="320"></canvas>
         <div id="info">
             <div class="score-box">
                 <label>分数 Score</label>
@@ -226,9 +402,9 @@
     <script>
         const canvas = document.getElementById('tetris');
         const ctx = canvas.getContext('2d');
-        const SCALE = 20;
-        const COLS = 9;  // 适配手机竖屏 (180/20)
-        const ROWS = 20; // 适配手机竖屏 (400/20)
+        const SCALE = 18;  // 小方块尺寸，适配手机
+        const COLS = 8;   // 8列 (150/18 ≈ 8)
+        const ROWS = 17;  // 17行 (320/18 ≈ 17)
         
         // 现代渐变色彩
         const COLORS = [
