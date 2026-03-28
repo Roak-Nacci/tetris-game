@@ -294,16 +294,27 @@
     /* 响应式 */
     @media (max-width: 768px) {
       .container {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 15px;
+      }
+      
+      .game-wrapper {
+        display: flex;
         flex-direction: column;
         align-items: center;
       }
       
       .side-panel {
-        flex-direction: row;
-        flex-wrap: wrap;
-        width: 100%;
-        max-width: 240px;
-        justify-content: center;
+        flex-direction: column;
+        gap: 10px;
+      }
+      
+      .glass-panel {
+        width: 80px;
+        padding: 8px;
       }
       
       .mobile-controls {
@@ -315,12 +326,6 @@
         top: 0;
         transform: none;
         margin-bottom: 20px;
-      }
-      
-      .game-wrapper {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
       }
     }
 
