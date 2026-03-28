@@ -45,7 +45,7 @@
         }
         #game-container {
             display: flex;
-            gap: 12px;
+            gap: 6px;
             align-items: flex-start;
             justify-content: center;
         }
@@ -86,25 +86,25 @@
             color: #fff;
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            min-width: 120px;
+            gap: 8px;
+            min-width: 60px;
         }
         .score-box {
             background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
             backdrop-filter: blur(10px);
-            padding: 10px 14px;
-            border-radius: 10px;
+            padding: 4px 8px;
+            border-radius: 6px;
             border: 1px solid rgba(255,255,255,0.1);
         }
         .score-box label { 
             color: rgba(255,255,255,0.6); 
-            font-size: 10px;
+            font-size: 8px;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
         .score-box span { 
             color: #00f5d4; 
-            font-size: 20px; 
+            font-size: 14px; 
             font-weight: 600;
             display: block; 
             margin-top: 2px; 
@@ -144,17 +144,17 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 4px;
-            margin-top: 8px;
+            gap: 3px;
+            margin-top: 6px;
         }
-        .btn-row { display: flex; gap: 6px; justify-content: center; }
+        .btn-row { display: flex; gap: 4px; justify-content: center; }
         .ctrl-btn {
-            width: 44px; height: 44px;
+            width: 32px; height: 32px;
             background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%);
             color: #fff;
             border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 10px;
-            font-size: 16px;
+            border-radius: 8px;
+            font-size: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -202,7 +202,7 @@
 <body>
     <h1>TETRIS</h1>
     <div id="game-container">
-        <canvas id="tetris" width="162" height="288"></canvas>
+        <canvas id="tetris" width="200" height="300"></canvas>
         <div id="info">
             <div class="score-box">
                 <label>分数 Score</label>
@@ -235,9 +235,9 @@
     <script>
         const canvas = document.getElementById('tetris');
         const ctx = canvas.getContext('2d');
-        const SCALE = 18;
-        const COLS = 9;  // 适配手机竖屏
-        const ROWS = 16; // 减少行数，更适合手机屏幕
+        const SCALE = 10;
+        const COLS = 20;  // 200px / 10
+        const ROWS = 30; // 300px / 10
         
         // 现代渐变色彩
         const COLORS = [
