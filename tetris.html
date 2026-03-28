@@ -178,6 +178,23 @@
         #start-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,245,212,0.4); }
         #start-btn:active { transform: scale(0.96); }
         
+        #restart-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 12px 24px;
+            font-size: 14px;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a5a);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255,107,107,0.4);
+            z-index: 100;
+        }
+        #restart-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255,107,107,0.5); }
+        #restart-btn:active { transform: scale(0.96); }
+        
         #pause-btn {
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
             color: #fff;
@@ -253,7 +270,7 @@
     </style>
 </head>
 <body>
-    <h1>TETRIS <span id="version" style="font-size:10px;opacity:0.5;margin-left:8px;">v1.1</span></h1>
+    <h1>TETRIS <span id="version" style="font-size:10px;opacity:0.5;margin-left:8px;">v1.2</span></h1>
     <div id="game-container">
         <canvas id="tetris" width="200" height="300"></canvas>
         <div id="info">
@@ -272,9 +289,9 @@
                     <div class="ctrl-btn" ontouchstart="rotate()">↻</div>
                 </div>
                 <div class="btn-row">
-                    <div class="ctrl-btn" ontouchstart="move(-1)">←</div>
-                    <div class="ctrl-btn" ontouchstart="drop()">↓</div>
-                    <div class="ctrl-btn" ontouchstart="move(1)">→</div>
+                    <div class="ctrl-btn" onmousedown="startRepeat('left')" ontouchstart="startRepeat('left')" onmouseup="stopRepeat()" onmouseleave="stopRepeat()" ontouchend="stopRepeat()">←</div>
+                    <div class="ctrl-btn" onmousedown="startRepeat('down')" ontouchstart="startRepeat('down')" onmouseup="stopRepeat()" onmouseleave="stopRepeat()" ontouchend="stopRepeat()">↓</div>
+                    <div class="ctrl-btn" onmousedown="startRepeat('right')" ontouchstart="startRepeat('right')" onmouseup="stopRepeat()" onmouseleave="stopRepeat()" ontouchend="stopRepeat()">→</div>
                 </div>
             </div>
         </div>
@@ -284,6 +301,7 @@
         <p>最终分数: <span id="final-score">0</span></p>
         <button id="start-btn" onclick="startGame()">再来一局</button>
     </div>
+    <button id="restart-btn" onclick="startGame()">🔄 重新开始</button>
 
     <script>
         const canvas = document.getElementById('tetris');
@@ -320,6 +338,30 @@
         let gameInterval = null;
         let isPlaying = false;
         let isPaused = false;
+        let repeatInterval = null;
+        
+        // 长按连续移动
+        function startRepeat(direction) {
+            if(!isPlaying) return;
+            // 立即执行一次
+            if(direction === 'left') move(-1);
+            if(direction === 'right') move(1);
+            if(direction === 'down') drop();
+            
+            // 150ms后开始连续移动
+            repeatInterval = setInterval(() => {
+                if(direction === 'left') move(-1);
+                if(direction === 'right') move(1);
+                if(direction === 'down') drop();
+            }, 150);
+        }
+        
+        function stopRepeat() {
+            if(repeatInterval) {
+                clearInterval(repeatInterval);
+                repeatInterval = null;
+            }
+        }
         
         function createBoard() {
             board = Array(ROWS).fill().map(() => Array(COLS).fill(0));
