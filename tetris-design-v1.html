@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tetris - 高保真设计稿</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* 主色调 */
+      --bg-primary: #0f0c29;
+      --bg-secondary: #302b63;
+      --bg-tertiary: #24243e;
+      --glass-bg: rgba(15, 20, 40, 0.6);
+      --glass-border: rgba(168, 85, 247, 0.3);
+      --neon-purple: #a855f7;
+      --text-primary: #ffffff;
+      --text-secondary: #c4b5fd;
+      
+      /* 方块颜色 */
+      --block-i: linear-gradient(135deg, #06b6d4, #0ea5e9);
+      --block-o: linear-gradient(135deg, #fbbf24, #f59e0b);
+      --block-t: linear-gradient(135deg, #a855f7, #8b5cf6);
+      --block-l: linear-gradient(135deg, #f97316, #ea580c);
+      --block-j: linear-gradient(135deg, #3b82f6, #2563eb);
+      --block-s: linear-gradient(135deg, #22c55e, #16a34a);
+      --block-z: linear-gradient(135deg, #ef4444, #dc2626);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-tertiary) 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+
+    /* 背景网格 */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: 
+        linear-gradient(rgba(168, 85, 247, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(168, 85, 247, 0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      gap: 30px;
+      align-items: flex-start;
+    }
+
+    /* 游戏画布 */
+    .game-wrapper {
+      position: relative;
+    }
+
+    .game-canvas {
+      width: 200px;
+      height: 400px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      border: 2px solid var(--neon-purple);
+      border-radius: 12px;
+      box-shadow: 
+        0 0 30px rgba(168, 85, 247, 0.4),
+        inset 0 0 60px rgba(0, 0, 0, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .game-canvas::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: 
+        linear-gradient(rgba(168, 85, 247, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(168, 85, 247, 0.05) 1px, transparent 1px);
+      background-size: 20px 20px;
+      pointer-events: none;
+    }
+
+    /* 方块样式 */
+    .cell {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border-radius: 3px;
+      transition: all 0.1s ease;
+    }
+
+    .cell::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      right: 2px;
+      bottom: 50%;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.3), transparent);
+      border-radius: 2px 2px 0 0;
+    }
+
+    .cell.I { background: var(--block-i); box-shadow: 0 0 10px #22d3ee; }
+    .cell.O { background: var(--block-o); box-shadow: 0 0 10px #fcd34d; }
+    .cell.T { background: var(--block-t); box-shadow: 0 0 10px #c084fc; }
+    .cell.L { background: var(--block-l); box-shadow: 0 0 10px #fdba74; }
+    .cell.J { background: var(--block-j); box-shadow: 0 0 10px #60a5fa; }
+    .cell.S { background: var(--block-s); box-shadow: 0 0 10px #4ade80; }
+    .cell.Z { background: var(--block-z); box-shadow: 0 0 10px #f87171; }
+
+    /* 信息面板 */
+    .side-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      width: 160px;
+    }
+
+    .glass-panel {
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      text-align: center;
+    }
+
+    .panel-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+    }
+
+    .panel-value {
+      font-size: 36px;
+      font-weight: 800;
+      color: var(--text-primary);
+      text-shadow: 0 0 20px var(--neon-purple);
+    }
+
+    .panel-value.level {
+      font-size: 48px;
+      background: linear-gradient(135deg, #a855f7, #06b6d4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Next 预览 */
+    .next-preview {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    /* 按钮 */
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      backdrop-filter: blur(12px);
+    }
+
+    .btn:hover {
+      transform: scale(1.02);
+      border-color: var(--neon-purple);
+      box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn.primary {
+      background: linear-gradient(135deg, rgba(168, 85, 247, 0.4), rgba(139, 92, 246, 0.4));
+      border-color: var(--neon-purple);
+    }
+
+    /* 移动端虚拟按键 */
+    .mobile-controls {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .control-row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .control-btn {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--glass-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .control-btn:hover {
+      border-color: var(--neon-purple);
+      box-shadow: 0 0 15px rgba(168, 85, 247, 0.4);
+    }
+
+    .control-btn:active {
+      transform: scale(0.95);
+      background: rgba(168, 85, 247, 0.3);
+    }
+
+    /* 标题 */
+    .title {
+      position: absolute;
+      top: -60px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 32px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #a855f7, #06b6d4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: none;
+      filter: drop-shadow(0 0 20px rgba(168, 85, 247, 0.5));
+      white-space: nowrap;
+    }
+
+    /* 响应式 */
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .side-panel {
+        flex-direction: row;
+        flex-wrap: wrap;
+        width: 100%;
+        max-width: 240px;
+        justify-content: center;
+      }
+      
+      .mobile-controls {
+        display: flex;
+      }
+      
+      .title {
+        position: relative;
+        top: 0;
+        transform: none;
+        margin-bottom: 20px;
+      }
+      
+      .game-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+
+    /* 动画 */
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 30px rgba(168, 85, 247, 0.4); }
+      50% { box-shadow: 0 0 50px rgba(168, 85, 247, 0.7); }
+    }
+
+    .game-canvas {
+      animation: pulse 3s ease-in-out infinite;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .glass-panel {
+      animation: fadeIn 0.5s ease-out forwards;
+    }
+
+    .glass-panel:nth-child(1) { animation-delay: 0.1s; }
+    .glass-panel:nth-child(2) { animation-delay: 0.2s; }
+    .glass-panel:nth-child(3) { animation-delay: 0.3s; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="game-wrapper">
+      <div class="title">TETRIS</div>
+      
+      <div class="game-canvas" id="gameCanvas">
+        <!-- 示例方块 - 演示用 -->
+        <!-- 堆叠的方块 -->
+        <div class="cell Z" style="left: 60px; top: 360px;"></div>
+        <div class="cell Z" style="left: 80px; top: 360px;"></div>
+        <div class="cell Z" style="left: 100px; top: 360px;"></div>
+        <div class="cell Z" style="left: 80px; top: 340px;"></div>
+        
+        <div class="cell L" style="left: 20px; top: 360px;"></div>
+        <div class="cell L" style="left: 40px; top: 360px;"></div>
+        <div class="cell L" style="left: 40px; top: 340px;"></div>
+        <div class="cell L" style="left: 40px; top: 320px;"></div>
+        
+        <div class="cell T" style="left: 120px; top: 320px;"></div>
+        <div class="cell T" style="left: 140px; top: 320px;"></div>
+        <div class="cell T" style="left: 160px; top: 320px;"></div>
+        <div class="cell T" style="left: 140px; top: 300px;"></div>
+        
+        <div class="cell S" style="left: 80px; top: 280px;"></div>
+        <div class="cell S" style="left: 100px; top: 280px;"></div>
+        <div class="cell S" style="left: 100px; top: 260px;"></div>
+        <div class="cell S" style="left: 120px; top: 260px;"></div>
+        
+        <!-- 当前下落的方块 - T型 -->
+        <div class="cell T" style="left: 80px; top: 60px;"></div>
+        <div class="cell T" style="left: 100px; top: 60px;"></div>
+        <div class="cell T" style="left: 120px; top: 60px;"></div>
+        <div class="cell T" style="left: 100px; top: 40px;"></div>
+      </div>
+      
+      <div class="btn-group">
+        <button class="btn primary">暂停</button>
+        <button class="btn">重新开始</button>
+      </div>
+      
+      <!-- 移动端控制 -->
+      <div class="mobile-controls">
+        <div class="control-row">
+          <button class="control-btn">↺</button>
+        </div>
+        <div class="control-row">
+          <button class="control-btn">←</button>
+          <button class="control-btn">↓</button>
+          <button class="control-btn">→</button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="side-panel">
+      <div class="glass-panel">
+        <div class="panel-label">Score</div>
+        <div class="panel-value">12,500</div>
+      </div>
+      
+      <div class="glass-panel">
+        <div class="panel-label">Level</div>
+        <div class="panel-value level">25</div>
+      </div>
+      
+      <div class="glass-panel">
+        <div class="panel-label">Next</div>
+        <div class="next-preview">
+          <div class="cell O" style="left: 20px; top: 20px;"></div>
+          <div class="cell O" style="left: 40px; top: 20px;"></div>
+          <div class="cell O" style="left: 20px; top: 40px;"></div>
+          <div class="cell O" style="left: 40px; top: 40px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
