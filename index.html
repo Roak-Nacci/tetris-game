@@ -45,6 +45,12 @@
         }
         #game-container {
             display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        #game-row {
+            display: flex;
             gap: 16px;
             align-items: flex-start;
             justify-content: center;
@@ -191,20 +197,22 @@
     </style>
 </head>
 <body>
-    <h1>TETRIS</h1>
+    <h1>TETRIS <span style="font-size: 18px; opacity: 0.7;">v1.2</span></h1>
     <div id="game-container">
-        <canvas id="tetris" width="180" height="400"></canvas>
-        <div id="info">
-            <div class="score-box">
-                <label>分数 Score</label>
-                <span id="score">0</span>
+        <div id="game-row">
+            <canvas id="tetris" width="400" height="400"></canvas>
+            <div id="info">
+                <div class="score-box">
+                    <label>分数 Score</label>
+                    <span id="score">0</span>
+                </div>
+                <div class="score-box">
+                    <label>等级 Level</label>
+                    <span id="level">1</span>
+                </div>
+                <button id="start-btn" onclick="startGame()">开始游戏</button>
+                <button id="pause-btn" onclick="togglePause()" style="display:none;">暂停</button>
             </div>
-            <div class="score-box">
-                <label>等级 Level</label>
-                <span id="level">1</span>
-            </div>
-            <button id="start-btn" onclick="startGame()">开始游戏</button>
-            <button id="pause-btn" onclick="togglePause()" style="display:none;">暂停</button>
         </div>
     </div>
     <div id="controls">
@@ -227,8 +235,9 @@
         const canvas = document.getElementById('tetris');
         const ctx = canvas.getContext('2d');
         const SCALE = 20;
-        const COLS = 9;  // 适配手机竖屏 (180/20)
-        const ROWS = 20; // 适配手机竖屏 (400/20)
+        const COLS = 20; // 20列
+        const ROWS = 20; // 20行
+        const VERSION = 'v1.2';
         
         // 现代渐变色彩
         const COLORS = [
